@@ -99,3 +99,62 @@ quarkus.vault.secret-config-kv-path=myapps/vault-service/config
 String foo;
 ```
 
+## Use vault in Cryptography-as-a-Service mode
+To avoid spreading all cryptographic operations across services, use "transit" engine of vault.
+
+The transit secrets engine can also sign and verify data; generate hashes and HMACs of data; and act as a source of random bytes.
+https://www.vaultproject.io/docs/secrets/transit
+
+1. Open sh in Vault's container to configure vault and add keys to encrypt and sign messages:
+```
+$ vault secrets enable transit
+
+$ vault write -f transit/keys/my-encryption-key ---> Usually each application has its own encryption key.
+$ vault write transit/keys/my-sign-keytype=ecdsa-p256 
+```
+
+2. Create a policy that gives access to transit operations:
+```
+$ cat <<EOF | vault policy write vault-service-policy -
+> path "transit/*" {
+>   capabilities = ["create","read","update"]
+>}
+>EOF 
+```
+
+3. Enable credentials
+```
+$ vault auth enable userpass
+$ vault write auth/userpass/users/jelly password="jelly" policies="vault-service-policy"
+```
+
+4. Inject the io.quarkus.vault.VaultTransitSecretEngine instance to use transit operations
+```
+@Inject
+VaultTransitSecretEngine transit;
+
+transit.encrypt("my-encryption-key", text-to-encrypt);
+
+transit.decrypt("my-encryption-key", text-to-decrypt).asString();
+
+transit.sign("my-sign-key", text-to-sign);
+```
+
+The following operations are supported by the Vault extension:
+
+ - encrypt
+Encrypts a regular string with a Vault key configured in the transit secret engine.
+
+ - decrypt
+Decrypts the encrypted data with the specified key and returns unencrypted data.
+
+ - rewrap
+Reencrypts into a new cipher text a cipher text that was obtained from encryption using an old key version with the last key version.
+
+ - sign
+Signs an input string with the specified key.
+
+ - verifySignature
+Checks that the signature was obtained from signing the input with the specified key.
+
+
