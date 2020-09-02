@@ -56,21 +56,21 @@ $ vault kv put secret/myapps/vault-service/config foo=bar
 ``
 
 3. Create a policy to provide read only access to the vault
-``
+```
 $ cat <<EOF | vault policy write vault-service-policy -
 > path "secret/data/myapps/vault-service/*" {
 >  capabilities = ["read"]
 >}
 >EOF
-``
+```
 
 4. Enable authentication to vault
-``
+```
 $ vault auth enable userpass --> enabling username/password authentication regime
 $ vault write auth/userpass/users/jelly password="jelly" policies="vault-service-policy"
-``
+```
 
-Quarkus supports multiple authentication types
+Quarkus supports multiple authentication types:
 a. token --> Pass the user token
 b. user/password --> Authenticate using username and password credentials
 c. approle --> Authenticate using role_id and a secret_id. role_id is usually embedded in Docker container and secret_id is obtained by Kubernetes cluster as cubbyhole.
@@ -84,18 +84,18 @@ $ ./mvnw quarkus:add-extension -Dextensions="quarkus-vault"
 ``
 
 2. Customize properties in application-properties to use vault
-``
+```
 quarkus.vault.url=http://localhost:8200 ---> This is for dev. But if you're running vault in kubernetes and we recommend that to be in a separate namespace, the URL will be "http://<service-name>.<namespace>.cluster.local:8200" or "http://<servicename>:8200"
 quarkus.vault.authentication.userpass.username=jelly
 quarkus.vault.authentication.userpass.password=jelly
 
 quarkus.vault.kv-secret-engine-version=2
 quarkus.vault.secret-config-kv-path=myapps/vault-service/config
-``
+```
 
 3. Access secret property using @ConfigProperty annotation
-``
+```
 @ConfigProperty(name = "foo") 
 String foo;
-``
+```
 
