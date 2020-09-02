@@ -142,19 +142,19 @@ transit.sign("my-sign-key", text-to-sign);
 
 The following operations are supported by the Vault extension:
 
- - encrypt
+ - encrypt:
 Encrypts a regular string with a Vault key configured in the transit secret engine.
 
- - decrypt
+ - decrypt:
 Decrypts the encrypted data with the specified key and returns unencrypted data.
 
- - rewrap
+ - rewrap:
 Reencrypts into a new cipher text a cipher text that was obtained from encryption using an old key version with the last key version.
 
- - sign
+ - sign:
 Signs an input string with the specified key.
 
- - verifySignature
+ - verifySignature:
 Checks that the signature was obtained from signing the input with the specified key.
 
 
