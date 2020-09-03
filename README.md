@@ -133,11 +133,11 @@ $ vault write auth/userpass/users/jelly password="jelly" policies="vault-service
 @Inject
 VaultTransitSecretEngine transit;
 
-transit.encrypt("my-encryption-key", text-to-encrypt);
+transit.encrypt("my-encryption-key", textToEncrypt);
 
-transit.decrypt("my-encryption-key", text-to-decrypt).asString();
+transit.decrypt("my-encryption-key", textToDecrypt).asString();
 
-transit.sign("my-sign-key", text-to-sign);
+transit.sign("my-sign-key", textToSign);
 ```
 
 The following operations are supported by the Vault extension:
